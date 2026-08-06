@@ -5,8 +5,6 @@
 // hub / modals can re-render whenever state mutates.
 // ============================================================================
 
-import { createNinja } from '../data/ninjas.js';
-
 const SAVE_KEY = 'ninjaWarz.save.v1';
 
 function defaultState() {
@@ -17,8 +15,9 @@ function defaultState() {
       accountLevel: 1,
       accountXP: 0,
       accountXPToNext: 100,
+      clanId: null, // set once via chooseClan() on the start screen
     },
-    roster: [createNinja({ className: 'Shinobi', level: 1 })],
+    roster: [],
     activeSquadIds: [],
     inventory: {
       weaponIds: [],
@@ -34,9 +33,6 @@ function defaultState() {
 class GameStateStore {
   constructor() {
     this.state = this._load() || defaultState();
-    if (this.state.activeSquadIds.length === 0 && this.state.roster.length) {
-      this.state.activeSquadIds = [this.state.roster[0].id];
-    }
     this.listeners = new Set();
   }
 
@@ -61,7 +57,6 @@ class GameStateStore {
   resetSave() {
     localStorage.removeItem(SAVE_KEY);
     this.state = defaultState();
-    this.state.activeSquadIds = [this.state.roster[0].id];
     this.notify();
   }
 

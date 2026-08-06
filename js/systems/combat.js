@@ -8,11 +8,12 @@
 
 import { getWeaponById } from '../data/weapons.js';
 import { getRelicById } from '../data/relics.js';
+import { getClanById } from '../data/clans.js';
 
 const MAX_TURNS = 200;
 
-/** Builds a lightweight, mutable combatant snapshot from a ninja + its gear/relics. */
-function buildCombatant(ninja, side, relicIds = []) {
+/** Builds a lightweight, mutable combatant snapshot from a ninja + its gear/relics/clan. */
+function buildCombatant(ninja, side, relicIds = [], clanBonus = null) {
   const weapon = ninja.equippedWeaponId ? getWeaponById(ninja.equippedWeaponId) : null;
   const relics = relicIds.map(getRelicById).filter(Boolean);
 
@@ -23,9 +24,13 @@ function buildCombatant(ninja, side, relicIds = []) {
     .filter((r) => r.effect.type === 'squadAttack')
     .reduce((sum, r) => sum + r.effect.value, 0);
 
-  const maxHP = Math.round(ninja.base.health * (1 + relicHealthBonus));
+  const clanHealthBonus = clanBonus?.type === 'health' ? clanBonus.value : 0;
+  const clanAttackBonus = clanBonus?.type === 'attack' ? clanBonus.value : 0;
+  const clanCritBonus = clanBonus?.type === 'critChance' ? clanBonus.value : 0;
+
+  const maxHP = Math.round(ninja.base.health * (1 + relicHealthBonus + clanHealthBonus));
   const attack = Math.round(
-    (ninja.base.attack + (weapon?.bonuses.attack || 0)) * (1 + relicAttackBonus)
+    (ninja.base.attack + (weapon?.bonuses.attack || 0)) * (1 + relicAttackBonus + clanAttackBonus)
   );
 
   return {
@@ -37,7 +42,7 @@ function buildCombatant(ninja, side, relicIds = []) {
     attack,
     defense: ninja.base.defense,
     speed: ninja.base.speed + (weapon?.bonuses.speed || 0),
-    critChance: clamp01(ninja.special.critChance + (weapon?.bonuses.critChance || 0)),
+    critChance: clamp01(ninja.special.critChance + (weapon?.bonuses.critChance || 0) + clanCritBonus),
     dodgeChance: clamp01(ninja.special.dodgeChance),
     lifeSteal: clamp01(ninja.special.lifeSteal + (weapon?.bonuses.lifeSteal || 0)),
     fainted: false,
@@ -92,14 +97,16 @@ function resolveAttack(attacker, target, log, rng) {
  * @param {Array} enemyNinjas - array of Ninja objects
  * @param {Object} [options]
  * @param {string[]} [options.playerRelicIds] - active relic ids buffing the player squad
+ * @param {string} [options.playerClanId] - player's chosen clan, for its passive bonus
  * @returns {{ winner: 'player'|'enemy'|'draw', log: string[], survivors: object, finalState: object[] }}
  */
 export function calculateBattleOutcome(playerNinjas, enemyNinjas, options = {}) {
   const rng = options.rng || Math.random;
   const log = [];
+  const clanBonus = options.playerClanId ? getClanById(options.playerClanId)?.bonus || null : null;
 
   const combatants = [
-    ...playerNinjas.map((n) => buildCombatant(n, 'player', options.playerRelicIds || [])),
+    ...playerNinjas.map((n) => buildCombatant(n, 'player', options.playerRelicIds || [], clanBonus)),
     ...enemyNinjas.map((n) => buildCombatant(n, 'enemy', [])),
   ];
 

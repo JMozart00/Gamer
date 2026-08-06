@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <!-- Clan selection (game entry point, shown until a clan is chosen) -->
+  <main id="clan-select-root" class="clan-select"></main>
+
   <!-- Persistent HUD -->
-  <header id="hud" class="hud">
-    <div class="hud-brand">Ninja Warz</div>
+  <header id="hud" class="hud hidden">
+    <div class="hud-brand">Ninja Warz <span id="hud-clan-badge" class="hud-clan-badge"></span></div>
     <div class="hud-stats">
       <div class="hud-stat hud-gold" title="Gold">
         <span class="hud-icon">💰</span><span id="hud-gold-value">0</span>
@@ -29,7 +32,7 @@
   </header>
 
   <!-- Floating Island Hub -->
-  <main id="island" class="island">
+  <main id="island" class="island hidden">
     <div class="island-clouds"></div>
     <div class="island-mass">
       <button class="hub-node" data-zone="dojo" style="--x: 50%; --y: 22%;">

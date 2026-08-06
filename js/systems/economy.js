@@ -157,7 +157,10 @@ export function runQuestBattle(quest) {
 
   const enemySquad = quest.buildEnemySquad();
   const activeRelicIds = gameState.state.inventory.activeRelicIds;
-  const result = calculateBattleOutcome(squad, enemySquad, { playerRelicIds: activeRelicIds });
+  const result = calculateBattleOutcome(squad, enemySquad, {
+    playerRelicIds: activeRelicIds,
+    playerClanId: gameState.state.player.clanId,
+  });
 
   // Apply post-battle HP/faint state back onto the player's persistent roster.
   for (const finalState of result.finalState) {

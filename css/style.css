@@ -39,6 +39,10 @@ button {
   cursor: pointer;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* ============================== HUD ============================== */
 
 .hud {
@@ -61,6 +65,13 @@ button {
   color: var(--color-accent-gold);
   letter-spacing: 1px;
   text-shadow: 2px 2px 0 #000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hud-clan-badge {
+  font-size: 1.1rem;
 }
 
 .hud-stats {
@@ -195,6 +206,150 @@ button {
 .hub-node-daimyo {
   border-color: var(--color-accent-karma);
   background: #2e1a1a;
+}
+
+/* ============================== CLAN SELECT ============================== */
+
+.clan-select {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+}
+
+.clan-select-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  color: var(--color-accent-gold);
+  text-shadow: 3px 3px 0 #000;
+  text-wrap: balance;
+  margin: 0;
+}
+
+.clan-select-subtitle {
+  color: var(--color-text-dim);
+  font-size: 1.2rem;
+  max-width: 46ch;
+  margin: 0 0 1rem;
+}
+
+.clan-cards {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 1000px;
+}
+
+.clan-card {
+  --clan-color: #fff;
+  --clan-glow: #fff;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-panel);
+  border: 3px solid var(--clan-color);
+  border-radius: 14px;
+  padding: 1.1rem 1rem 1.4rem;
+  color: var(--color-text);
+  box-shadow: 0 6px 0 #000;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.clan-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 0 #000, 0 0 24px var(--clan-glow);
+}
+
+.clan-card:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 #000;
+}
+
+.clan-card-platform {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.clan-card-platform::before {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--clan-color) 0%, transparent 72%);
+  opacity: 0.35;
+}
+
+.clan-card-ninja {
+  font-size: 2.3rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px var(--clan-glow));
+}
+
+.clan-card-ninja-a {
+  transform: translate(10px, 0) scaleX(-1);
+}
+
+.clan-card-ninja-b {
+  transform: translate(-10px, 4px);
+}
+
+.clan-card-badge {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--color-panel-light);
+  border: 2px solid var(--clan-color);
+  border-radius: 50%;
+}
+
+.clan-card-name {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  color: var(--clan-color);
+  text-wrap: balance;
+  line-height: 1.4;
+}
+
+.clan-card-tagline {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--color-text-dim);
+  margin: 0;
+  min-height: 3.2em;
+}
+
+.clan-card-bonus {
+  font-size: 1rem;
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--clan-color);
+  border-radius: 999px;
+  color: var(--clan-color);
+}
+
+.btn.clan-card-btn {
+  margin-top: 0.4rem;
+  background: var(--clan-color);
+  color: #04140b;
+  pointer-events: none;
 }
 
 /* ============================== MODALS ============================== */
