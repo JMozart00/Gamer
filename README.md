@@ -1,76 +1,46 @@
 # Ninja Warz — Remake
 
-A browser-based remake of the 2010 Facebook Flash game *Ninja Warz*, built with
-vanilla HTML5 / CSS3 / JavaScript (ES modules, no build step, no framework).
+A browser-based remake of the 2010 Facebook Flash game *Ninja Warz*: a single
+self-contained `index.html` (vanilla HTML/CSS/JS, no build step, no
+framework, no dependencies) with hand-painted clan/island artwork baked in
+as inline data URIs.
 
 ## Running it
 
-Because the app uses native ES modules (`import`/`export`), it must be served
-over HTTP (not opened directly as a `file://` URL). Any static file server
-works:
+Just open `index.html` in a browser — no server required. (Serving it over
+HTTP works too, e.g. `python3 -m http.server 8000`.)
 
-```bash
-python3 -m http.server 8000
-# or
-npx serve .
-```
+## What's in the game
 
-Then open `http://localhost:8000`.
+- **Clan select**: choose Fire (+15% Attack), Lotus (+20% Health), or Shadow
+  (+10% Defense, +15% Gold) — each clan is a full painted character portrait
+  and re-themes the entire UI's accent color.
+- **Floating island hub**: a hand-painted island background per clan
+  (day/lotus, lava/fire, night/shadow) with invisible hotspots over the
+  Dojo, Recruitment tent, Weapon Shop, Relic Shop, Hospital, Daimyo statue,
+  and the Battle Blimp.
+- **Dojo**: train ninjas with Karma to level up (belts from White to Black
+  track rank, up to level 60).
+- **Recruitment**: hire more ninjas (cost scales with roster size, cap 25).
+- **Weapon Shop**: 9 weapons (Kunai through Dragon Fang Blade), Gold or
+  Karma currency, equip per-ninja.
+- **Relic Shop**: 6 permanent clan-wide perks (HP/ATK/DEF/Gold % bonuses).
+- **Hospital**: injured ninjas (from lost battles) recover over time, or
+  heal instantly for Gold.
+- **Battle Blimp**: send a squad (up to 5) into a PvP clash against a
+  randomly named rival clan, or a PvE fight against one of 3 named bosses.
+  Battles resolve by comparing total squad power (with randomized variance)
+  and play out as an animated dust-cloud clash with floating damage
+  numbers.
+- **Daimyo statue**: claim a Gold + Karma blessing every 30 seconds.
+- **Idle gold**: your bank passively earns Gold every second while the tab
+  is open, and pays out accumulated earnings (capped at 8h) when you
+  return.
 
-## Project structure
+## Persistence
 
-```
-index.html            Hub layout + HUD markup
-css/style.css          Retro-styled floating island hub, HUD, modals, cards
-
-js/data/                Static content catalogs (pure data, no state)
-  belts.js               12-belt / 60-level progression table (390 total karma)
-  weapons.js              Weapon catalog (gold + karma tier gear)
-  relics.js                Relic catalog (squad-wide passives)
-  ninjas.js                 Ninja class templates + createNinja() factory
-  quests.js                  Daimyo quest list + enemy squad builders
-  rivals.js                  Procedural PvP rival squad generator (Arena)
-
-js/state/
-  gameState.js            Single source of truth; localStorage persistence;
-                           pub/sub so UI re-renders on any mutation
-
-js/systems/              Game logic (pure-ish functions operating on gameState)
-  dojo.js                 trainNinja(), karma-cost lookups, belt progress
-  combat.js               calculateBattleOutcome() turn-based auto-battler
-  economy.js              Recruiting, shop purchases, equipping, hospital
-                           healing, and running quest battles
-  arena.js                runArenaBattle() against procedural PvP rivals
-
-js/ui/
-  hud.js                  Persistent Gold / Karma / Account Level bar
-  hub.js                  Wires the 7 floating-island nodes to their modals
-  modal.js                Generic modal open/close/re-render shell
-  toast.js                Lightweight toast notifications
-  zones/                  One renderer per hub zone (Dojo, Recruit, Weapon
-                           Shop, Relic Shop, Hospital, Daimyo, Arena)
-
-js/main.js               App bootstrap
-```
-
-## Design notes
-
-- **Belt progression**: 12 belts (7 standard, 5 striped master) x 5 levels
-  each = levels 1-60. Karma cost per level equals the belt's tier index
-  (1-12), with level 1 free and level 60 carrying a +1 "mastery trial"
-  premium — this makes the full Level 1-60 karma table sum to **exactly
-  390**, per spec (`BELT_TABLE` in `belts.js`, verified by a dev-time
-  assertion and covered by a smoke test).
-- **Combat**: turn order each round is sorted by Speed (+ small jitter to
-  break ties), attackers focus-fire the lowest-HP living enemy, and damage
-  factors in attack (base + weapon), target defense, crit chance/multiplier,
-  dodge chance, and life steal. Battles cap at 200 rounds to guarantee
-  termination.
-- **Arena (PvP)**: opening the Arena rolls 4 AI rival clans scored around the
-  player's account level (±5 levels, 2-4 ninjas each). Each rival is tagged
-  Easy/Even/Hard based on its average level vs. the player's, which scales its
-  Gold/Karma/XP payout (0.7x-1.5x). Fights reuse `calculateBattleOutcome()`
-  same as Daimyo quests; "Scout New Targets" re-rolls the list for free.
-- **Persistence**: all state lives in a single `gameState` object saved to
-  `localStorage` on every mutation; the hub/HUD/modals subscribe to changes
-  and re-render reactively rather than polling.
+State autosaves every 15s and after every action, via `localStorage`
+(`ninjawarz-save` key). The game code itself calls `window.storage.get/set/
+delete(key)` — an async key-value API from the tool this file was
+originally authored in — which is shimmed at the top of the `<script>`
+block onto `localStorage` so it works standalone.
