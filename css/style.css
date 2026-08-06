@@ -208,6 +208,11 @@ button {
   background: #2e1a1a;
 }
 
+.hub-node-arena {
+  border-color: var(--color-danger);
+  background: #2e1626;
+}
+
 /* ============================== CLAN SELECT ============================== */
 
 .clan-select {
@@ -535,6 +540,21 @@ button {
 .tag-active {
   background: var(--color-success);
   color: #04140b;
+}
+
+.tag-easy {
+  background: var(--color-success);
+  color: #04140b;
+}
+
+.tag-even {
+  background: var(--color-accent-gold);
+  color: #04140b;
+}
+
+.tag-hard {
+  background: var(--color-danger);
+  color: #fff;
 }
 
 .battle-log {

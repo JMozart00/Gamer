@@ -29,6 +29,7 @@ js/data/                Static content catalogs (pure data, no state)
   relics.js                Relic catalog (squad-wide passives)
   ninjas.js                 Ninja class templates + createNinja() factory
   quests.js                  Daimyo quest list + enemy squad builders
+  rivals.js                  Procedural PvP rival squad generator (Arena)
 
 js/state/
   gameState.js            Single source of truth; localStorage persistence;
@@ -39,14 +40,15 @@ js/systems/              Game logic (pure-ish functions operating on gameState)
   combat.js               calculateBattleOutcome() turn-based auto-battler
   economy.js              Recruiting, shop purchases, equipping, hospital
                            healing, and running quest battles
+  arena.js                runArenaBattle() against procedural PvP rivals
 
 js/ui/
   hud.js                  Persistent Gold / Karma / Account Level bar
-  hub.js                  Wires the 6 floating-island nodes to their modals
+  hub.js                  Wires the 7 floating-island nodes to their modals
   modal.js                Generic modal open/close/re-render shell
   toast.js                Lightweight toast notifications
   zones/                  One renderer per hub zone (Dojo, Recruit, Weapon
-                           Shop, Relic Shop, Hospital, Daimyo)
+                           Shop, Relic Shop, Hospital, Daimyo, Arena)
 
 js/main.js               App bootstrap
 ```
@@ -64,6 +66,11 @@ js/main.js               App bootstrap
   factors in attack (base + weapon), target defense, crit chance/multiplier,
   dodge chance, and life steal. Battles cap at 200 rounds to guarantee
   termination.
+- **Arena (PvP)**: opening the Arena rolls 4 AI rival clans scored around the
+  player's account level (±5 levels, 2-4 ninjas each). Each rival is tagged
+  Easy/Even/Hard based on its average level vs. the player's, which scales its
+  Gold/Karma/XP payout (0.7x-1.5x). Fights reuse `calculateBattleOutcome()`
+  same as Daimyo quests; "Scout New Targets" re-rolls the list for free.
 - **Persistence**: all state lives in a single `gameState` object saved to
   `localStorage` on every mutation; the hub/HUD/modals subscribe to changes
   and re-render reactively rather than polling.

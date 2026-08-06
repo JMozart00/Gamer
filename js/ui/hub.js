@@ -8,6 +8,7 @@ import { openWeaponShopModal } from './zones/weaponShop.js';
 import { openRelicShopModal } from './zones/relicShop.js';
 import { openHospitalModal } from './zones/hospital.js';
 import { openDaimyoModal } from './zones/daimyo.js';
+import { openArenaModal } from './zones/arena.js';
 
 const ZONE_HANDLERS = {
   dojo: openDojoModal,
@@ -16,6 +17,7 @@ const ZONE_HANDLERS = {
   relics: openRelicShopModal,
   hospital: openHospitalModal,
   daimyo: openDaimyoModal,
+  arena: openArenaModal,
 };
 
 export function initHub() {
